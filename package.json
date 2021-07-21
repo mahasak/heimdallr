@@ -4,7 +4,11 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "type-check": "tsc"
+    "type-check": "tsc",
+    "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
+    "dev:migrate": "prisma migrate dev --name migration && prisma migrate deploy",
+    "generate:prisma": "prisma generate",
+    "generate:nexus": "ts-node --transpile-only -P nexus.tsconfig.json pages/api"
   },
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
