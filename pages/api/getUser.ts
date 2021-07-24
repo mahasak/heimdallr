@@ -1,6 +1,8 @@
 import { supabase } from '../../utils/supabaseClient'
 
 export default async function getUser(req, res) {
-  const user = await supabase.auth.user();
-  return res.status(200).json({ user: user });
+  const token = req.headers.token
+  const { data: user, error } = await supabase.auth.api.getUser(token)
+  if (error) return res.status(401).json({ error: error.message })
+  return res.status(200).json({ user: user })
 }
