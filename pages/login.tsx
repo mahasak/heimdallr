@@ -8,6 +8,9 @@ import useSWR from 'swr'
 import { Auth, Card, Typography, Space, Button, Icon } from '@supabase/ui'
 import { supabase } from '../utils/supabaseClient'
 import { useEffect, useState } from 'react'
+
+import Router from 'next/router'
+
 declare type ViewType = 'sign_in' | 'sign_up' | 'forgotten_password' | 'magic_link' | 'update_password';
 const fetcher = (url, token) =>
   fetch(url, {
@@ -61,7 +64,8 @@ const Login = () => {
           />
         </Space>
       )
-
+      Router.push('/protected')
+      
     return (
       <Space direction="vertical" size={6}>
         {authView === 'forgotten_password' && <Auth.UpdatePassword supabaseClient={supabase} />}
