@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "next",
-    "build": "next build",
+    "build:legacy": "next build",
     "start": "next start",
     "type-check": "tsc",
     "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
@@ -10,14 +10,17 @@
     "generate:prisma": "prisma generate",
     "generate:nexus": "ts-node --transpile-only -P nexus.tsconfig.json pages/api",
     "build:nexus-typegen": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' --transpile-only schema",
-    "build2": "npm run build:nexus-typegen && next build"
+    "build:tailwind": "tailwind build styles/index.css -o styles/tailwind.css",
+    "build": "npm run build:nexus-typegen && next build"
   },
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
     "@apollo/react-ssr": "^4.0.0",
+    "@popperjs/core": "^2.9.2",
     "@prisma/client": "^2.25.0",
     "@supabase/supabase-js": "^1.20.0",
     "@supabase/ui": "^0.29.2",
+    "@tailwindcss/forms": "^0.3.3",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
     "apollo-link-http": "^1.5.17",
@@ -33,6 +36,9 @@
     "nexus-prisma": "^0.29.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "tailwindcss": "^2.2.7",
     "ts-node": "^10.1.0"
   },
   "devDependencies": {
