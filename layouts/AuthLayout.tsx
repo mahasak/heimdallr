@@ -5,7 +5,7 @@ import FooterSmall from "../components/Footers/FooterSmall";
 
 import Navbar from "../components/Navbars/AuthNavbar";
 
-export default function Auth({ children }) {
+export default function AuthLayout({ children }) {
   return (
     <>
       <Navbar transparent />

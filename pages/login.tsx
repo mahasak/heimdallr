@@ -1,130 +1,118 @@
-import React from "react";
-import Link from "next/link";
-
-import { NextPage } from 'next';
-type GetLayoutFunc = (page: React.ReactElement) => React.ReactElement
-export type NextPageWithLayout = NextPage & {
-  getLayout: GetLayoutFunc
-}
-
-// layout for page
-
 type Props = {
   layout: React.ReactElement
 }
 
-import Auth from "../layouts/Auth";
+import AuthLayout from "../layouts/AuthLayout";
+import Link from 'next/link'
+import useSWR from 'swr'
+import { Auth, Card, Typography, Space, Button, Icon } from '@supabase/ui'
+import { supabase } from '../utils/supabaseClient'
+import { useEffect, useState } from 'react'
+declare type ViewType = 'sign_in' | 'sign_up' | 'forgotten_password' | 'magic_link' | 'update_password';
+const fetcher = (url, token) =>
+  fetch(url, {
+    method: 'GET',
+    headers: new Headers({ 'Content-Type': 'application/json', token }),
+    credentials: 'same-origin',
+  }).then((res) => res.json())
 
-export default function Login() {
-  return (
-    <>
-      <div className="container mx-auto px-4 h-full">
-        <div className="flex content-center items-center justify-center h-full">
-          <div className="w-full lg:w-4/12 px-4">
-            <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">
-              <div className="rounded-t mb-0 px-6 py-6">
-                <div className="text-center mb-3">
-                  <h6 className="text-blueGray-500 text-sm font-bold">
-                    Sign in with
-                  </h6>
-                </div>
-                <div className="btn-wrapper text-center">
-                  <button
-                    className="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    <img alt="..." className="w-5 mr-1" src="/img/github.svg" />
-                    Github
-                  </button>
-                  <button
-                    className="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    <img alt="..." className="w-5 mr-1" src="/img/google.svg" />
-                    Google
-                  </button>
-                </div>
-                <hr className="mt-6 border-b-1 border-blueGray-300" />
-              </div>
-              <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-                <div className="text-blueGray-400 text-center mb-3 font-bold">
-                  <small>Or sign in with credentials</small>
-                </div>
-                <form>
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Email"
-                    />
-                  </div>
+const Login = () => {
+  const { user, session } = Auth.useUser()
+  const { data, error } = useSWR(session ? ['/api/getUser', session.access_token] : null, fetcher)
+  const [authView, setAuthView] = useState('sign_in')
 
-                  <div className="relative w-full mb-3">
-                    <label
-                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                      htmlFor="grid-password"
-                    >
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Password"
-                    />
-                  </div>
-                  <div>
-                    <label className="inline-flex items-center cursor-pointer">
-                      <input
-                        id="customCheckLogin"
-                        type="checkbox"
-                        className="form-checkbox border-0 rounded text-blueGray-700 ml-1 w-5 h-5 ease-linear transition-all duration-150"
-                      />
-                      <span className="ml-2 text-sm font-semibold text-blueGray-600">
-                        Remember me
-                      </span>
-                    </label>
-                  </div>
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') setAuthView('forgotten_password')
+      if (event === 'USER_UPDATED') setTimeout(() => setAuthView('sign_in'), 1000)
+      // Send session to /api/auth route to set the auth cookie.
+      // NOTE: this is only needed if you're doing SSR (getServerSideProps)!
+      
+      fetch('/api/auth', {
+        method: 'POST',
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+        credentials: 'same-origin',
+        body: JSON.stringify({ event, session }),
+      }).then((res) => {
+        return res.json()
+      })
+    })
 
-                  <div className="text-center mt-6">
-                    <button
-                      className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"
-                    >
-                      Sign In
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <div className="flex flex-wrap mt-6 relative">
-              <div className="w-1/2">
-                <a
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                  className="text-blueGray-200"
-                >
-                  <small>Forgot password?</small>
-                </a>
-              </div>
-              <div className="w-1/2 text-right">
-                <Link href="/auth/register">
-                  <a href="#pablo" className="text-blueGray-200">
-                    <small>Create new account</small>
-                  </a>
-                </Link>
-              </div>
-            </div>
+    return () => {
+      authListener.unsubscribe()
+    }
+  }, [])
+
+  const View = () => {
+    if (!user)
+      return (
+        <Space direction="vertical" size={8}>
+          <div>
+            <img src="https://app.supabase.io/img/supabase-dark.svg" width="96" />
+            <Typography.Title level={3}>Welcome to Supabase Auth</Typography.Title>
           </div>
-        </div>
-      </div>
-    </>
-  );
+          <Auth
+            supabaseClient={supabase}
+            providers={['google', 'github']}
+            view={authView}
+            socialLayout="horizontal"
+            socialButtonSize="xlarge"
+            redirectTo="http://localhost:3000/protected"
+          />
+        </Space>
+      )
+
+    return (
+      <Space direction="vertical" size={6}>
+        {authView === 'forgotten_password' && <Auth.UpdatePassword supabaseClient={supabase} />}
+        {user && (
+          <>
+            <Typography.Text>You're signed in</Typography.Text>
+            <Typography.Text strong>Email: {user.email}</Typography.Text>
+
+            <Button
+              icon={<Icon type="LogOut" />}
+              type="outline"
+              onClick={() => supabase.auth.signOut()}
+            >
+              Log out
+            </Button>
+            {error && <Typography.Text type="danger">Failed to fetch user!</Typography.Text>}
+            {data && !error ? (
+              <>
+                <Typography.Text type="success">
+                  User data retrieved server-side (in API route):
+                </Typography.Text>
+
+                <Typography.Text>
+                  <pre>{JSON.stringify(data, null, 2)}</pre>
+                </Typography.Text>
+              </>
+            ) : (
+              <div>Loading...</div>
+            )}
+
+            <Typography.Text>
+              <Link href="/protected">
+                <a>SSR example with getServerSideProps</a>
+              </Link>
+            </Typography.Text>
+          </>
+        )}
+      </Space>
+    )
+  }
+
+  return (
+    <div style={{ maxWidth: '420px', margin: '96px auto' }}>
+      <Card>
+        <View />
+      </Card>
+    </div>
+  )
 }
 
-Login.layout = Auth;
+
+Login.layout = AuthLayout;
+
+export default Login;

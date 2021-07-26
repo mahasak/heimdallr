@@ -1,33 +1,41 @@
-import { supabase } from "../utils/supabaseClient";
+import Link from 'next/link'
+import { Card, Typography, Space } from '@supabase/ui'
+import { supabase } from '../utils/supabaseClient'
 
-const basePath = 'http://localhost:3000'
-export async function getServerSideProps(req, res) {
-  //const { user } = await supabase.auth.api.getUserByCookie(req)
-  const response = await fetch(`${basePath}/api/getUser`).then((response) =>
-    response.json()
-  );
+export default function Profile({ user }) {
+  return (
+    <div style={{ maxWidth: '420px', margin: '96px auto' }}>
+      <Card>
+        <Space direction="vertical" size={6}>
+          <Typography.Text>You're signed in</Typography.Text>
+          <Typography.Text strong>Email: {user.email}</Typography.Text>
+          <Typography.Text type="success">
+            User data retrieved server-side (from Cookie in getServerSideProps):
+          </Typography.Text>
 
-  const { user } = response;
+          <Typography.Text>
+            <pre>{JSON.stringify(user, null, 2)}</pre>
+          </Typography.Text>
+
+          <Typography.Text>
+            <Link href="/login">
+              <a>Static example with useSWR</a>
+            </Link>
+          </Typography.Text>
+        </Space>
+      </Card>
+    </div>
+  )
+}
+
+export async function getServerSideProps({ req }) {
+  const { user } = await supabase.auth.api.getUserByCookie(req)
 
   if (!user) {
-    return {
-      redirect: { destination: "/login", permanent: false },
-    };
+    // If no user, redirect to index.
+    return { props: {}, redirect: { destination: '/login', permanent: false } }
   }
-  
-  return { props: { user } };
-}
-export default function Protected({ user }) {
-  return (
-    <>
-      <p>
-        // Let's greet the user by their e-mail address
-        Welcome {user.email}!{" "}
-        <span role="img" aria-label="waving hand">
-          👋🏾
-        </span>
-      </p>
-      You are currently viewing a top secret page!
-    </>
-  );
+
+  // If there is a user, return it.
+  return { props: { user } }
 }
