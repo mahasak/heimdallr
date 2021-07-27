@@ -22,7 +22,7 @@ const fetcher = (url, token) =>
 const Login = () => {
   const { user, session } = Auth.useUser()
   const { data, error } = useSWR(session ? ['/api/getUser', session.access_token] : null, fetcher)
-  const [authView, setAuthView] = useState('sign_in')
+  const [authView, setAuthView] = useState<ViewType>('sign_in')
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {

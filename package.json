@@ -8,7 +8,7 @@
     "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
     "dev:migrate": "prisma migrate dev --name migration && prisma migrate deploy",
     "generate:prisma": "prisma generate",
-    "generate:nexus": "ts-node --transpile-only -P nexus.tsconfig.json pages/api",
+    "generate:nexus": "ts-node --transpile-only -P nexus.tsconfig.json pages/api/graphql",
     "build:nexus-typegen": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' --transpile-only schema",
     "build:tailwind": "tailwind build styles/index.css -o styles/tailwind.css",
     "build": "npm run build:nexus-typegen && next build"
