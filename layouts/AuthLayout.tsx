@@ -1,11 +1,8 @@
 import React from "react";
 import FooterSmall from "../components/Footers/FooterSmall";
-
-// components
-
 import Navbar from "../components/Navbars/AuthNavbar";
 
-export default function AuthLayout({ children }) {
+ const AuthLayout = ({ children }) => {
   return (
     <>
       <Navbar transparent />
@@ -24,3 +21,5 @@ export default function AuthLayout({ children }) {
     </>
   );
 }
+
+export default AuthLayout

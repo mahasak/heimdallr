@@ -9,10 +9,14 @@ import React from 'react';
 import Head from 'next/head';
 
 export default function MyApp({ Component, pageProps }) {
+  const Layout =  Component.layout || (({ children }) => <>{children}</>);
+  console.log(Component)
   return (
     <main className={'dark'}>
       <Auth.UserContextProvider supabaseClient={supabase}>
-        <Component {...pageProps} />
+        <Layout>
+        <Component {...pageProps}></Component>
+        </Layout>
       </Auth.UserContextProvider>
     </main>
   )

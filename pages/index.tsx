@@ -10,11 +10,11 @@ const fetcher = (url, token) =>
     headers: new Headers({ 'Content-Type': 'application/json', token }),
     credentials: 'same-origin',
   }).then((res) => res.json())
-
+  declare type ViewType = 'sign_in' | 'sign_up' | 'forgotten_password' | 'magic_link' | 'update_password';
 const Index = () => {
   const { user, session } = Auth.useUser()
   const { data, error } = useSWR(session ? ['/api/getUser', session.access_token] : null, fetcher)
-  const [authView, setAuthView] = useState('sign_in')
+  const [authView, setAuthView] = useState<ViewType>('sign_in')
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
@@ -63,7 +63,7 @@ const Index = () => {
             <Typography.Text strong>Email: {user.email}</Typography.Text>
 
             <Button
-              icon={<Icon type="LogOut" />}
+              icon={<Icon type="LogOut" src={null}/>}
               type="outline"
               onClick={() => supabase.auth.signOut()}
             >
