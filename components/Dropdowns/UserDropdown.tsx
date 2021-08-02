@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { createPopper } from "@popperjs/core";
 
 const UserDropdown = () => {
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
-  const btnDropdownRef = React.createRef();
-
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [popoverDropdownRef, setPopoverDropdownRef] = useState(null);
+  const btnDropdownRef = React.createRef<HTMLAnchorElement>();
+  const popoverDropdownRef = React.createRef<HTMLDivElement>(); 
 
   const openDropdownPopover = () => {
-    createPopper(referenceElement, popoverDropdownRef, {
+    createPopper(btnDropdownRef.current, popoverDropdownRef.current, {
       placement: "bottom-start",
     });
     setDropdownPopoverShow(true);
@@ -23,7 +21,7 @@ const UserDropdown = () => {
       <a
         className="text-blueGray-500 block"
         href="#pablo"
-        ref={referenceElement}
+        ref={btnDropdownRef}
         onClick={(e) => {
           e.preventDefault();
           dropdownPopoverShow ? closeDropdownPopover() : openDropdownPopover();
